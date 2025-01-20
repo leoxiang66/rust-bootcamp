@@ -6,7 +6,7 @@ Lecture 3: Idiomatic Rust and functional programming features
 
 ## Exercises
 
-Will be published soon.
+[Exercise 3 - Idiomatic Rust](https://github.com/AlphaGergedan/getting-rusty-bootcamp/tree/master/exercises)
 
 ## Sources and learning material
 
