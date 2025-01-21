@@ -21,10 +21,10 @@
 | **December 9, 2024** | Rust Language Portrait | 
 | **December 16, 2024** | Ownership, Borrowing, References, and Smart Pointers | 
 | **Break** | Christmas and New Year | 
-| **January 6, 2025** | Idiomatic Rust and functional programming features | 
+| **January 7, 2025** | Idiomatic Rust and functional programming features | 
 | **January 13, 2025** | Async Rust - Intro to Tokio | 
 | **January 20, 2025** | Testing | 
-| **January 27, 2025** | Advanced Features in Rust | 
+| **January 28, 2025** | Advanced Features in Rust | 
 | **February 3, 2025** | Decentralized Programming in Rust | 
 | **February 10, 2025** | Blockchain Development with Rust | 
 | **February 17, 2025** | Project, Review, and Next Steps |
