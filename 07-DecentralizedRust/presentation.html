@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Introduction to libp2p and P2P Networks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .slide {
+            min-height: 100vh;
+            width: 100vw;
+            padding: 40px;
+            box-sizing: border-box;
+            border-bottom: 2px solid #eee;
+            padding-top: 80px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-width: 90%;
+        }
+        .code-annotation {
+            color: #666;
+            font-style: italic;
+            margin: 10px 0;
+        }
+        .concept-box {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .implementation-box {
+            background: #f1f8ff;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .navigation {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .nav-button {
+            background: linear-gradient(145deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(145deg, #0056b3, #004494);
+        }
+
+        .nav-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        .protocol-details {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 10px 0;
+        }
+        
+        .disabled {
+            opacity: 0.5;
+            cursor: not-allowed !important;
+            background: linear-gradient(145deg, #999, #777) !important;
+            transform: none !important;
+        }
+
+        .diagram {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: monospace;
+            line-height: 1.2;
+            color: #2c3e50;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 15px 0;
+        }
+
+        .diagram pre {
+            background: transparent;
+            margin: 0;
+            white-space: pre;
+            color: #34495e;
+            font-weight: bold;
+        }
+
+        .diagram-arrow {
+            color: #3498db;
+        }
+
+        .diagram-box {
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide" id="intro">
+        <h1>Understanding P2P Networks with libp2p</h1>
+        <div class="concept-box">
+            <h2>What is Peer-to-Peer (P2P)?</h2>
+            <p>A distributed network architecture where:</p>
+            <ul>
+                <li>Each node (peer) acts as both client and server</li>
+                <li>Direct communication between peers without central coordination</li>
+                <li>Self-organizing and self-healing network topology</li>
+                <li>Increased resilience through decentralization</li>
+            </ul>
+        </div>
+        <div class="implementation-box">
+            <h3>Real-World Applications</h3>
+            <ul>
+                <li>File Sharing Networks (BitTorrent)</li>
+                <li>Cryptocurrency Networks (Bitcoin, Ethereum)</li>
+                <li>Distributed Storage (IPFS)</li>
+                <li>Messaging Systems (Matrix)</li>
+                <li>Content Delivery Networks</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" id="libp2p-basics">
+        <h2>libp2p Core Concepts</h2>
+        <div class="concept-box">
+            <h3>Transport Layer Protocols</h3>
+            
+            <div class="protocol-details">
+                <h4>TCP/IP (Transmission Control Protocol/Internet Protocol)</h4>
+                <p>The fundamental protocol of the Internet that:</p>
+                <ul>
+                    <li>Provides reliable, ordered data delivery</li>
+                    <li>Handles connection establishment and management</li>
+                    <li>Implements flow control and congestion control</li>
+                    <li>Best for applications requiring reliable data transfer</li>
+                    <li>Most widely supported protocol across networks</li>
+                </ul>
+            </div>
+
+            <div class="protocol-details">
+                <h4>QUIC (Quick UDP Internet Connections)</h4>
+                <p>Modern transport protocol developed by Google that:</p>
+                <ul>
+                    <li>Built on UDP for faster connection establishment</li>
+                    <li>Provides built-in encryption (TLS 1.3)</li>
+                    <li>Supports multiple streams without head-of-line blocking</li>
+                    <li>Better performance on mobile networks</li>
+                    <li>Improved handling of network changes</li>
+                </ul>
+            </div>
+
+            <div class="protocol-details">
+                <h4>WebSocket</h4>
+                <p>Protocol for browser-based real-time communication:</p>
+                <ul>
+                    <li>Enables full-duplex communication over TCP</li>
+                    <li>Designed for browser-to-server persistent connections</li>
+                    <li>Supports text and binary data formats</li>
+                    <li>Handles web-specific concerns (CORS, proxies)</li>
+                    <li>Essential for browser-based P2P applications</li>
+                </ul>
+            </div>
+
+            <div class="protocol-details">
+                <h4>WebRTC (Web Real-Time Communication)</h4>
+                <p>Protocol suite for peer-to-peer communication in browsers:</p>
+                <ul>
+                    <li>Direct browser-to-browser communication</li>
+                    <li>Built-in support for audio/video streaming</li>
+                    <li>NAT traversal capabilities</li>
+                    <li>Secure by default with DTLS encryption</li>
+                    <li>Ideal for real-time applications</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="implementation-box">
+            <h3>Basic Setup Example</h3>
+            <pre><code>let mut swarm = libp2p::SwarmBuilder::with_new_identity()
+    .with_tokio()
+    .with_tcp(
+        tcp::Config::default(),
+        noise::Config::new,
+        yamux::Config::default,
+    )?</code></pre>
+            <div class="code-annotation">
+                - Creates a new network identity
+                - Sets up async runtime with Tokio
+                - Configures TCP transport with noise encryption
+                - Enables stream multiplexing with yamux
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="addressing">
+        <h2>Network Addressing in libp2p</h2>
+        <div class="concept-box">
+            <h3>MultiAddr Format</h3>
+            <p>Hierarchical addressing system that encodes:</p>
+            <ul>
+                <li>Network protocol (/ip4, /ip6)</li>
+                <li>Transport protocol (/tcp, /udp)</li>
+                <li>Port numbers</li>
+                <li>Peer IDs</li>
+                <li>Additional protocol-specific information</li>
+            </ul>
+        </div>
+        
+        <div class="implementation-box">
+            <h3>Addressing Examples</h3>
+            <pre><code>// Listen on all interfaces
+"/ip4/0.0.0.0/tcp/0".parse()?
+
+// Connect to a specific peer
+"/ip4/127.0.0.1/tcp/1234/p2p/QmYyQSo1c1Ym7orWxLYvCrM2EmxFTANf8wXmmE7DWjhx5N"</code></pre>
+            <div class="code-annotation">
+                - Protocol-agnostic addressing
+                - Human-readable format
+                - Composable and extensible
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="routing">
+        <h2>Routing and Discovery</h2>
+        <div class="concept-box">
+            <h3>GossipSub Protocol</h3>
+            <p>Efficient message routing with:</p>
+            <ul>
+                <li>Topic-based message propagation</li>
+                <li>Mesh network formation</li>
+                <li>Peer scoring and message validation</li>
+                <li>Heartbeat mechanism for mesh maintenance</li>
+            </ul>
+        </div>
+        
+        <div class="implementation-box">
+            <h3>GossipSub Configuration</h3>
+            <pre><code>let gossipsub_config = gossipsub::ConfigBuilder::default()
+    .heartbeat_interval(Duration::from_secs(1))
+    .validation_mode(gossipsub::ValidationMode::Strict)
+    .mesh_n_low(5)     // Minimum number of peers
+    .mesh_n_high(10)   // Maximum number of peers
+    .mesh_outbound_min(2) // Minimum outbound peers
+    .build()?;
+
+let mut gossipsub = gossipsub::Behaviour::new(
+    gossipsub::MessageAuthenticity::Signed(key.clone()),
+    gossipsub_config,
+)?;</code></pre>
+        </div>
+    </div>
+
+    <div class="slide" id="security">
+        <h2>Security and Encryption</h2>
+        <div class="concept-box">
+            <h3>Security Features</h3>
+            <ul>
+                <li>Transport Layer Security</li>
+                <li>Peer Authentication</li>
+                <li>Message Integrity</li>
+                <li>Perfect Forward Secrecy</li>
+            </ul>
+        </div>
+        
+        <div class="implementation-box">
+            <h3>Noise Protocol Implementation</h3>
+            <pre><code>// Configure secure channel
+.with_tcp(
+    tcp::Config::default(),
+    noise::Config::new,  // Noise protocol for encryption
+    yamux::Config::default,
+)?
+
+// Message authentication
+let behaviour = gossipsub::Behaviour::new(
+    gossipsub::MessageAuthenticity::Signed(key.clone()),
+    config
+)?;</code></pre>
+            <div class="code-annotation">
+                - Noise protocol provides strong encryption
+                - Public key authentication
+                - Message signing ensures authenticity
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="mpc-extension">
+        <h2>Extending to Multi-Party Computation (MPC)</h2>
+        <div class="concept-box">
+            <h3>MPC Integration Requirements</h3>
+            <ul>
+                <li>Secure Channel Establishment</li>
+                <li>Protocol State Management</li>
+                <li>Consensus Mechanisms</li>
+                <li>Error Handling and Recovery</li>
+                <li>Data Privacy and Integrity</li>
+            </ul>
+        </div>
+        
+        <div class="implementation-box">
+            <h3>Implementation Considerations</h3>
+            <pre><code>// Example MPC message structure
+#[derive(Serialize, Deserialize)]
+enum MPCMessage {
+    InitiateComputation {
+        computation_id: String,
+        participants: Vec<PeerId>,
+    },
+    Share {
+        round: u32,
+        data: Vec<u8>,
+    },
+    Result {
+        computation_id: String,
+        result: Vec<u8>,
+    },
+    Error {
+        computation_id: String,
+        error: String,
+    },
+}</code></pre>
+            <div class="code-annotation">
+                - Define clear message protocols
+                - Handle computation state
+                - Implement error recovery
+                - Ensure secure data handling
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="ipfs-blockchain">
+        <h2>IPFS and Blockchain Integration</h2>
+        
+        <div class="concept-box">
+            <h3>IPFS (InterPlanetary File System) Architecture</h3>
+            <div class="diagram">
+                <pre>
+┌────────────────────────────────────────────────┐
+│                   IPFS Node                    │
+├────────────────────────────────────────────────┤
+│                                                │
+│  ┌─────────────┐        ┌──────────────────┐   │
+│  │   Content   │        │   libp2p Stack   │   │
+│  │ Addressing  │◄─────► │  ┌────────────┐  │   │
+│  │    (CID)    │        │  │    DHT     │  │   │
+│  └─────────────┘        │  └────────────┘  │   │
+│                         │  ┌────────────┐  │   │
+│  ┌─────────────┐        │  │  Routing   │  │   │
+│  │   Merkle    │◄─────► │  └────────────┘  │   │
+│  │    DAG      │        │  ┌────────────┐  │   │
+│  └─────────────┘        │  │  PubSub    │  │   │
+│                         │  └────────────┘  │   │
+│                         └──────────────────┘   │
+└────────────────────────────────────────────────┘</pre>
+            </div>
+        </div>
+
+        <div class="implementation-box">
+            <h3>Blockchain Integration (Solana Example)</h3>
+            <div class="concept-box">
+                <h4>P2P Transaction Flow in Blockchain</h4>
+                <div class="diagram">
+                    <pre>
+┌──────────────┐   ┌───────────────┐   ┌──────────────┐
+│  Transaction │   │ P2P Network   │   │ Validator    │
+│  Initiation  │──►│ Propagation   │──►│ Node         │
+└──────────────┘   └───────────────┘   └──────────────┘
+        │                  ▲                   │
+        │                  │                   ▼
+┌──────────────┐   ┌───────────────┐   ┌──────────────┐
+│  libp2p      │   │ Gossipsub     │   │ Consensus    │
+│  Transport   │──►│ Protocol      │◄──│ Protocol     │
+└──────────────┘   └───────────────┘   └──────────────┘</pre>
+                </div>
+            </div>
+
+            <div class="protocol-details">
+                <h4>Transaction Processing Example</h4>
+                <pre><code>// Example of transaction propagation using libp2p
+pub async fn propagate_transaction(
+    swarm: &mut Swarm<GossipsubBehaviour>,
+    transaction: Transaction,
+) -> Result<()> {
+    // Serialize transaction
+    let tx_data = transaction.serialize()?;
+    
+    // Publish to the network using gossipsub
+    swarm.behaviour_mut().publish(
+        TRANSACTION_TOPIC.clone(),
+        tx_data
+    )?;
+    
+    // Handle transaction events
+    while let Some(event) = swarm.next().await {
+        match event {
+            SwarmEvent::Behaviour(GossipsubEvent::Message {
+                propagation_source,
+                message,
+                ..
+            }) => {
+                // Process incoming transaction messages
+                process_transaction_message(message)?;
+            }
+            SwarmEvent::ConnectionEstablished { peer_id, .. } => {
+                // New peer connected, might need transaction sync
+                sync_transactions_with_peer(peer_id)?;
+            }
+            _ => {}
+        }
+    }
+    Ok(())
+}</code></pre>
+                <div class="code-annotation">
+                    - Uses libp2p for P2P communication
+                    - Gossipsub for efficient transaction propagation
+                    - Handles peer synchronization
+                    - Maintains transaction consistency across network
+                </div>
+            </div>
+
+            <div class="protocol-details">
+                <h4>Key Benefits of P2P in Blockchain</h4>
+                <ul>
+                    <li>Decentralized transaction propagation</li>
+                    <li>Efficient network topology for broadcasting</li>
+                    <li>Built-in peer discovery and routing</li>
+                    <li>Resilient to network partitions</li>
+                    <li>Scalable message distribution</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="thank-you">
+        <h2>Thank You for Listening!</h2>
+        <div class="concept-box">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>P2P networks provide robust, decentralized communication</li>
+                <li>libp2p offers a flexible, modular networking stack</li>
+                <li>Multiple transport protocols and security features available</li>
+                <li>Easy integration with existing applications</li>
+                <li>Extensible for complex use cases like MPC</li>
+            </ul>
+        </div>
+        <div class="implementation-box">
+            <h3>Further Resources</h3>
+            <ul>
+                <li>libp2p Documentation: <a href="https://docs.libp2p.io">docs.libp2p.io</a></li>
+                <li>Rust libp2p: <a href="https://github.com/libp2p/rust-libp2p">GitHub Repository</a></li>
+                <li>Examples: <a href="https://github.com/libp2p/rust-libp2p/tree/master/examples">Rust Examples</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" onclick="previousSlide()">← Previous</button>
+        <button class="nav-button" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+
+        function updateNavigationButtons() {
+            const prevButton = document.querySelector('.nav-button:first-child');
+            const nextButton = document.querySelector('.nav-button:last-child');
+            
+            // Disable/enable previous button
+            if (currentSlide === 0) {
+                prevButton.classList.add('disabled');
+                prevButton.disabled = true;
+            } else {
+                prevButton.classList.remove('disabled');
+                prevButton.disabled = false;
+            }
+            
+            // Disable/enable next button
+            if (currentSlide === slides.length - 1) {
+                nextButton.classList.add('disabled');
+                nextButton.disabled = true;
+            } else {
+                nextButton.classList.remove('disabled');
+                nextButton.disabled = false;
+            }
+        }
+
+        function showSlide(n) {
+            // Prevent going beyond bounds
+            if (n < 0 || n >= slides.length) return;
+            
+            slides[currentSlide].style.display = 'none';
+            currentSlide = n;
+            slides[currentSlide].style.display = 'block';
+            window.scrollTo(0, 0);
+            updateNavigationButtons();
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // Initialize
+        slides.forEach((slide, index) => {
+            if (index !== 0) slide.style.display = 'none';
+        });
+        updateNavigationButtons();
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) nextSlide();
+            if (e.key === 'ArrowLeft' && currentSlide > 0) previousSlide();
+        });
+    </script>
+</body>
+</html> 

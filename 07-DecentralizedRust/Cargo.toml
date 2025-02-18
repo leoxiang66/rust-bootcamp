@@ -1,0 +1,26 @@
+[package]
+name = "rust-p2p-examples"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "A collection of examples demonstrating P2P networking concepts using libp2p"
+
+[dependencies]
+libp2p = { version = "0.55", features = [
+    "tcp",
+    "dns",
+    "quic",
+    "websocket",
+    "noise",
+    "yamux",
+    "gossipsub",
+    "identify",
+    "tokio",
+    "macros"
+]}
+tokio = { version = "1.36", features = ["full"] }
+async-std = { version = "1.12", features = ["attributes"] }
+futures = "0.3"
+env_logger = "0.11"
+log = "0.4"
+anyhow = "1.0" 
